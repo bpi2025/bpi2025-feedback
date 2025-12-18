@@ -1,46 +1,53 @@
 <script>
-document.getElementById("feedbackForm").onsubmit = function(e){
+document.getElementById("feedbackForm").onsubmit = async function(e){
     e.preventDefault();
 
-    var name = document.getElementById("name").value.trim();
-    var affiliation = document.getElementById("affiliation").value.trim();
-    var email = document.getElementById("email").value.trim().toLowerCase();
-    var rating = document.getElementById("rating").value;
-    var comment = document.getElementById("comment").value;
+    const name = document.getElementById("name").value.trim();
+    const affiliation = document.getElementById("affiliation").value.trim();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const rating = document.getElementById("rating").value;
+    const comment = document.getElementById("comment").value;
 
-    // 1️⃣ CHECK EMAIL AUTHORIZATION
-    fetch("https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec", {
-        method: "POST",
-        body: JSON.stringify({ email: email })
-    })
-    .then(res => res.json())
-    .then(result => {
+    try {
+        // 1️⃣ EMAIL CHECK
+        const emailCheck = await fetch(
+            "https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec",
+            {
+                method: "POST",
+                body: JSON.stringify({ email: email })
+            }
+        );
 
-        if (result.status !== "allowed") {
-            alert("This email is not authorized to receive a certificate.");
+        const emailText = await emailCheck.text();
+
+        if (!emailText.toLowerCase().includes("allowed")) {
+            alert("This email is not authorized for certificate generation.");
             return;
         }
 
         // 2️⃣ SAVE FEEDBACK
-        return fetch("https://script.google.com/macros/s/AKfycbx0gp1KKA70SkvYu5Kp4c02JLxyFlrvyQMOovozToWn5Z9jL8-eTUK4MrXVt5JZI3Wp/exec", {
-            method: "POST",
-            body: JSON.stringify({
-                name: name,
-                affiliation: affiliation,
-                email: email,
-                rating: rating,
-                comment: comment
-            })
-        });
-    })
-    .then(() => {
-        // 3️⃣ GENERATE CERTIFICATE
+        await fetch(
+            "https://script.google.com/macros/s/AKfycbx0gp1KKA70SkvYu5Kp4c02JLxyFlrvyQMOovozToWn5Z9jL8-eTUK4MrXVt5JZI3Wp/exec",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    name: name,
+                    affiliation: affiliation,
+                    email: email,
+                    rating: rating,
+                    comment: comment
+                })
+            }
+        );
+
+        // 3️⃣ CERTIFICATE
         window.location.href =
             "certificate.html?name=" + encodeURIComponent(name) +
             "&affiliation=" + encodeURIComponent(affiliation);
-    })
-    .catch(() => {
-        alert("Submission failed. Please try again.");
-    });
+
+    } catch (err) {
+        alert("Something went wrong. Please try again.");
+        console.error(err);
+    }
 };
 </script>
