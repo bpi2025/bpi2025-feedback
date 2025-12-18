@@ -12,7 +12,7 @@ document.getElementById("feedbackForm").addEventListener("submit", function(e){
 
     // EMAIL CHECK (GET – most reliable)
     fetch(
-      "https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec?email=" 
+      "https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec" 
       + encodeURIComponent(email)
     )
     .then(r => r.text())
