@@ -1,88 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>BPI 2025 Feedback</title>
-<meta charset="UTF-8">
-</head>
-
-<body style="font-family:Arial;background:#f4f4f4;">
-
-<h2 style="text-align:center;margin-top:50px;">
-BPI 2025 – Conference Feedback
-</h2>
-
-<form id="feedbackForm"
-      style="width:420px;margin:auto;background:#fff;padding:25px;border-radius:8px;">
-
-    <!-- NAME -->
-    <input type="text"
-           id="name"
-           placeholder="Full Name"
-           required
-           autocomplete="off"
-           style="width:100%;padding:10px;margin-top:10px;">
-
-    <!-- AFFILIATION -->
-    <input type="text"
-           id="affiliation"
-           placeholder="Affiliation (Institute / Organization)"
-           required
-           autocomplete="off"
-           style="width:100%;padding:10px;margin-top:10px;">
-
-    <!-- RATING -->
-    <select id="rating"
-            required
-            style="width:100%;padding:10px;margin-top:10px;">
-        <option value="">Overall Rating</option>
-        <option>Excellent</option>
-        <option>Good</option>
-        <option>Average</option>
-    </select>
-
-    <!-- FEEDBACK -->
-    <textarea id="comment"
-              placeholder="Your feedback (optional)"
-              style="width:100%;padding:10px;margin-top:10px;"></textarea>
-
-    <button type="submit"
-            style="margin-top:15px;width:100%;padding:12px;
-                   background:#6b0f4a;color:white;border:none;
-                   font-size:16px;cursor:pointer;">
-        Submit & Get Certificate
-    </button>
-
-</form>
-
 <script>
 document.getElementById("feedbackForm").onsubmit = function(e){
     e.preventDefault();
 
     var name = document.getElementById("name").value.trim();
     var affiliation = document.getElementById("affiliation").value.trim();
+    var email = document.getElementById("email").value.trim().toLowerCase();
     var rating = document.getElementById("rating").value;
     var comment = document.getElementById("comment").value;
 
-    fetch("https://script.google.com/macros/s/AKfycbx0gp1KKA70SkvYu5Kp4c02JLxyFlrvyQMOovozToWn5Z9jL8-eTUK4MrXVt5JZI3Wp/exec", {
+    // 1️⃣ CHECK EMAIL AUTHORIZATION
+    fetch("https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec", {
         method: "POST",
-        body: JSON.stringify({
-            name: name,
-            affiliation: affiliation,
-            rating: rating,
-            comment: comment
-        })
+        body: JSON.stringify({ email: email })
     })
-    .then(function () {
-        // Redirect to certificate after saving feedback
+    .then(res => res.json())
+    .then(result => {
+
+        if (result.status !== "allowed") {
+            alert("This email is not authorized to receive a certificate.");
+            return;
+        }
+
+        // 2️⃣ SAVE FEEDBACK
+        return fetch("https://script.google.com/macros/s/AKfycbx0gp1KKA70SkvYu5Kp4c02JLxyFlrvyQMOovozToWn5Z9jL8-eTUK4MrXVt5JZI3Wp/exec", {
+            method: "POST",
+            body: JSON.stringify({
+                name: name,
+                affiliation: affiliation,
+                email: email,
+                rating: rating,
+                comment: comment
+            })
+        });
+    })
+    .then(() => {
+        // 3️⃣ GENERATE CERTIFICATE
         window.location.href =
             "certificate.html?name=" + encodeURIComponent(name) +
             "&affiliation=" + encodeURIComponent(affiliation);
     })
-    .catch(function () {
-        alert("Error saving feedback. Please try again.");
+    .catch(() => {
+        alert("Submission failed. Please try again.");
     });
 };
 </script>
-
-</body>
-</html>
