@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <title>BPI 2025 Certificate</title>
 
+<!-- Premium fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
 @page { size: A4 landscape; margin:0; }
 
@@ -15,18 +18,32 @@ body { margin:0; }
     background:url("certificate.png") no-repeat center;
     background-size:cover;
     position:relative;
-    font-family:Georgia,serif;
 }
 
+/* PARTICIPANT NAME */
 .name {
     position: absolute;
-    top: 320px;        /* move DOWN */
-    left: 200px;       /* center between margins */
-    width: 680px;      /* matches underline width */
+    top: 360px;              /* aligned to underline */
+    left: 220px;
+    width: 680px;
     text-align: center;
-    font-size: 38px;   /* matches template typography */
-    color: #6b0f4a;    /* exact maroon */
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    color: #6b0f4a;
     font-weight: 600;
+}
+
+/* AFFILIATION (below name) */
+.affiliation {
+    position: absolute;
+    top: 410px;              /* just below name */
+    left: 220px;
+    width: 680px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: #333;
+    font-weight: 400;
 }
 </style>
 </head>
@@ -35,12 +52,17 @@ body { margin:0; }
 
 <div class="certificate">
     <div class="name" id="certName"></div>
+    <div class="affiliation" id="certAffiliation"></div>
 </div>
 
 <script>
 var params = new URLSearchParams(window.location.search);
+
 document.getElementById("certName").innerText =
     params.get("name") || "Participant Name";
+
+document.getElementById("certAffiliation").innerText =
+    params.get("affiliation") || "";
 </script>
 
 </body>
