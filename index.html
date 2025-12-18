@@ -1,53 +1,50 @@
 <script>
-document.getElementById("feedbackForm").onsubmit = async function(e){
+document.getElementById("feedbackForm").addEventListener("submit", function(e){
     e.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
-    const affiliation = document.getElementById("affiliation").value.trim();
-    const email = document.getElementById("email").value.trim().toLowerCase();
+    const name = document.getElementById("name").value;
+    const affiliation = document.getElementById("affiliation").value;
+    const email = document.getElementById("email").value;
     const rating = document.getElementById("rating").value;
     const comment = document.getElementById("comment").value;
 
-    try {
-        // 1️⃣ EMAIL CHECK
-        const emailCheck = await fetch(
-            "https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec",
-            {
-                method: "POST",
-                body: JSON.stringify({ email: email })
-            }
-        );
+    console.log("Submitting:", name, affiliation, email);
 
-        const emailText = await emailCheck.text();
+    // EMAIL CHECK (GET – most reliable)
+    fetch(
+      "https://script.google.com/macros/s/AKfycbyWCDkwectVdS-Jn4Z33K0LbyRbNLj-gyd6lmegkEFgeoucSz81-VXnLyvnePkt9-2x/exec?email=" 
+      + encodeURIComponent(email)
+    )
+    .then(r => r.text())
+    .then(t => {
+        console.log("Email API response:", t);
 
-        if (!emailText.toLowerCase().includes("allowed")) {
-            alert("This email is not authorized for certificate generation.");
-            return;
+        if (!t.toLowerCase().includes("allowed")) {
+            alert("Email not authorized");
+            throw "STOP";
         }
 
-        // 2️⃣ SAVE FEEDBACK
-        await fetch(
-            "https://script.google.com/macros/s/AKfycbx0gp1KKA70SkvYu5Kp4c02JLxyFlrvyQMOovozToWn5Z9jL8-eTUK4MrXVt5JZI3Wp/exec",
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    name: name,
-                    affiliation: affiliation,
-                    email: email,
-                    rating: rating,
-                    comment: comment
-                })
-            }
+        // SAVE FEEDBACK
+        return fetch(
+          "https://script.google.com/macros/s/AKfycbx0gp1KKA70SkvYu5Kp4c02JLxyFlrvyQMOovozToWn5Z9jL8-eTUK4MrXVt5JZI3Wp/exec",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              name, affiliation, email, rating, comment
+            })
+          }
         );
-
-        // 3️⃣ CERTIFICATE
+    })
+    .then(() => {
         window.location.href =
-            "certificate.html?name=" + encodeURIComponent(name) +
-            "&affiliation=" + encodeURIComponent(affiliation);
-
-    } catch (err) {
-        alert("Something went wrong. Please try again.");
-        console.error(err);
-    }
-};
+          "certificate.html?name=" + encodeURIComponent(name) +
+          "&affiliation=" + encodeURIComponent(affiliation);
+    })
+    .catch(err => {
+        if (err !== "STOP") {
+            console.error(err);
+            alert("Submission failed. Check console.");
+        }
+    });
+});
 </script>
