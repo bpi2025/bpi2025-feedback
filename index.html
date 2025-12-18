@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BPI 2025 Feedback</title>
+<meta charset="UTF-8">
+</head>
+
+<body style="font-family:Arial;background:#f4f4f4;">
+
+<h2 style="text-align:center;margin-top:50px;">
+BPI 2025 – Conference Feedback
+</h2>
+
+<form id="feedbackForm" style="width:400px;margin:auto;background:#fff;padding:20px;border-radius:8px;">
+
+<input type="text" id="name" placeholder="Full Name" required style="width:100%;padding:10px;margin-top:10px;">
+
+<select id="rating" required style="width:100%;padding:10px;margin-top:10px;">
+<option value="">Overall Rating</option>
+<option>Excellent</option>
+<option>Good</option>
+<option>Average</option>
+</select>
+
+<textarea id="comment" placeholder="Your feedback" style="width:100%;padding:10px;margin-top:10px;"></textarea>
+
+<button type="submit" style="margin-top:15px;width:100%;padding:10px;background:#6b0f4a;color:white;border:none;">
+Submit & Get Certificate
+</button>
+
+</form>
+
+<script>
+document.getElementById("feedbackForm").onsubmit = function(e){
+    e.preventDefault();
+    var name = document.getElementById("name").value;
+    window.location.href = "certificate.html?name=" + encodeURIComponent(name);
+};
+</script>
+
+</body>
+</html>
